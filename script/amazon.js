@@ -1,10 +1,13 @@
 import { cart, addToCart } from "../data/cart.js";
-import { products } from "../data/products.js";
+import { products, loadProducts } from "../data/products.js";
 
-let productHTML = "";
+loadProducts(renderProductsGrid);
 
-products.forEach((product) => {
-  productHTML += `<div class="product-container">
+function renderProductsGrid() {
+  let productHTML = "";
+
+  products.forEach((product) => {
+    productHTML += `<div class="product-container">
           <div class="product-image-container">
             <img class="product-image"
               src="${product.image}">
@@ -14,7 +17,7 @@ products.forEach((product) => {
             ${product.name}
           </div>
 
-          <div class="product-rating-container">
+          <div class="product-rating-container">  
             <img class="product-rating-stars"
               src="${product.getStarUrl()}">
             <div class="product-rating-count link-primary">
@@ -54,24 +57,25 @@ products.forEach((product) => {
             Add to Cart
           </button>
         </div>`;
-});
-
-document.querySelector(".productContent").innerHTML = productHTML;
-
-function updateCartQuantity() {
-  let cartQuantity = 0;
-
-  cart.forEach((cartItem) => {
-    cartQuantity += cartItem.quantity;
   });
 
-  document.querySelector(".cartToQuantity").innerHTML = cartQuantity;
+  document.querySelector(".productContent").innerHTML = productHTML;
+
+  function updateCartQuantity() {
+    let cartQuantity = 0;
+
+    cart.forEach((cartItem) => {
+      cartQuantity += cartItem.quantity;
+    });
+
+    document.querySelector(".cartToQuantity").innerHTML = cartQuantity;
+  }
+
+  document.querySelectorAll(".addToCart").forEach((button) => {
+    button.addEventListener("click", () => {
+      const productId = button.dataset.productId;
+      addToCart(productId);
+      updateCartQuantity();
+    });
+  });
 }
-
-document.querySelectorAll(".addToCart").forEach((button) => {
-  button.addEventListener("click", () => {
-    const productId = button.dataset.productId;
-    addToCart(productId);
-    updateCartQuantity();
-  });
-});
