@@ -50,29 +50,51 @@ class Clothing extends Product {
   }
 }
 
-const tshirt = new Clothing({
-  id: "83d4ca15-0f35-48f5-b7a3-1ea210004f2e",
-  image: "images/products/adults-plain-cotton-tshirt-2-pack-teal.jpg",
-  name: "Adults Plain Cotton T-Shirt - 2 Pack",
-  rating: {
-    stars: 4.5,
-    count: 56,
-  },
-  priceCents: 799,
-  keywords: ["tshirts", "apparel", "mens"],
-  type: "clothing",
-  sizeChartLink: "images/clothing-size-chart.png",
-});
-console.log(tshirt);
+// const tshirt = new Clothing({
+//   id: "83d4ca15-0f35-48f5-b7a3-1ea210004f2e",
+//   image: "images/products/adults-plain-cotton-tshirt-2-pack-teal.jpg",
+//   name: "Adults Plain Cotton T-Shirt - 2 Pack",
+//   rating: {
+//     stars: 4.5,
+//     count: 56,
+//   },
+//   priceCents: 799,
+//   keywords: ["tshirts", "apparel", "mens"],
+//   type: "clothing",
+//   sizeChartLink: "images/clothing-size-chart.png",
+// });
+// console.log(tshirt);
 
 export let products = [];
+
+export function loadProductsFetch() {
+  const promise = fetch("https://supersimplebackend.dev/products")
+    .then((response) => {
+      return response.json();
+    })
+    .then((productsData) => {
+      products = productsData.map((productDetails) => {
+        if (productDetails.type === "clothing") {
+          return new Clothing(productDetails);
+        }
+        return new Product(productDetails);
+      });
+
+      console.log("load products");
+    })
+    .catch((error) => {
+      console.log("Unexpected error. Please try again later.");
+    });
+
+  return promise;
+}
 
 export function loadProducts(fun) {
   const xhr = new XMLHttpRequest();
 
   xhr.addEventListener("load", () => {
     products = JSON.parse(xhr.response).map((productDetails) => {
-      if (productDetails === "clothing") {
+      if (productDetails.type === "clothing") {
         return new Clothing(productDetails);
       }
 
@@ -81,7 +103,7 @@ export function loadProducts(fun) {
     console.log("load products");
 
     fun();
-  }); 
+  });
 
   xhr.addEventListener("error", (error) => {
     console.log("Unexpected error. Please try again later.");
